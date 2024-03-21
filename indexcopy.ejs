@@ -1,0 +1,126 @@
+<html>
+    <head>
+        <title>proj1</title>
+        <link rel="shortcut icon" href="#">
+    </head>
+    <body>
+        <div id="cameraSelctor">
+            Video: <select id="camera"></select>
+        </div>
+        <p><button id="takeProfilePicture" type="button" autofocus="true">Create Profile Picture</button></p>
+        <video id="videoTag" autoplay></video>
+        <canvas id="profilePicCanvas" style="display:none;"></canvas>
+        <div>
+            <img id="profilePictureOutput">
+        </div>
+        <script>
+           /* const constraints = {
+                    audio: true,
+                    video: true,
+                    };
+
+                     navigator.mediaDevices
+                    .getUserMedia(constraints)
+                    .then((mediaStream) => {
+                        const video = document.querySelector("video");
+                        video.srcObject = mediaStream;
+                        video.onloadedmetadata = () => {
+                        video.play();
+                        };
+                    })
+                    .catch((err) => {
+                        // always check for errors at the end.
+                        alert(err.message);
+                        console.error(`${err.name}: ${err.message}`);
+                    }); */
+    navigator.getUserMedia = navigator.getUserMedia ||navigator.webkitGetUserMedia ||navigator.mozGetUserMedia ||navigator.msGetUserMedia;
+    var videoSource=videoSelect.value;   
+    //var constraints={audio:true,video:false}    
+    var constraints={audio:false,video:{mandatory:{
+                minWidth:240,
+                maxWidth:240,
+                minHeight:240,
+                maxHeight:240
+            },
+        optional:[{
+            sourceId:videoSource
+        }]}}
+            var videoArea=document.querySelector("video");
+            var videoSelect=document.querySelector('#camera');
+            var profilePicCanvas=document.querySelector("#profilePicCanavas");
+            var profilePictureOutput=document.querySelector("#profilePictureOutput");
+            var takePicButton=document.querySelector("#takeProfilePicture");
+            var videoTag=document.querySelector("#videoTag");
+            
+            var width=240;
+            var height=0;
+            var streaming=false;
+            takePicButton.addEventListener('click',function(ev){
+                takeProfilePic();
+                ev.PreventDefault();
+            }, false)
+
+            videoTag.addEventListener('canplay',function(ev){
+                if(!streaming){
+                    height=videoTag.videoHeight/(videoTag.videoWidth/width);
+                    if(isNan(height)){
+                        height=width/(4/3);
+                    }
+
+                    videoTag.setAttribute('width',width);
+                    videoTag.setAttribute('height',height);
+                    profilePicCanavas.setAttribute('width',width);
+                    profilePicCanvas.setAttribute('height',height);
+                    streaming=true;
+                }
+            },false)
+
+            function takeProfilePic(){
+                var context=profilePicCanvas.getContext('2d');
+                if (width && height){
+                    profilePicCanavas.width=width;
+                    profilePicCanavs.height=height;
+                    context.drawImage(videoTag,0,0,widht,height);
+                    var data=profilePicCanavas.toDataURL('image/png');
+                    profilePictureOutput.setAttribute('src',data);
+                }
+            }
+            //MediaStreamTrack.getSources(getCameras);
+
+            if(typeof MediaStreamTrack==='undefined'||typeof MediaStreamTrack.getSources==='undefined'){
+                document.querySelector("#cameraSelector").style.visibility="hidden"
+            }
+            else{
+                MediaStreamTrack.getSources(getCameras);
+            }
+
+            videoSelect.oncharge=startStream;
+            startStream();
+            function getCameras(sourceInfos){
+                for(var i=0;i!==sourceInfos.length;++i){
+                    var sourceInfo=sourceInfos[i];
+                    var optiom=document.createElement('option');
+                    option.value=sourceInfo.id;
+                    if (sourceInfo.kind==='video'){
+                        option.text=sourceInfo.label||'camera'+(videoSelect.length+1);
+                        videoSelect.appendChild(option);
+                    }
+                }
+            }
+            function startStream(){
+                navigator.getUserMedia(constraints,onSuccess,onError);
+            }
+           
+
+            function onSuccess(stream){
+                console.log("Success!");
+                videoArea.src=window.URL.createObjectURL(stream);
+                videoArea.play();
+            }
+
+            function onError(error){
+                console.log("error",error)
+            }
+        </script>
+    </body>
+</html>
